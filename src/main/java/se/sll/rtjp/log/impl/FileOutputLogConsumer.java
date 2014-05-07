@@ -15,6 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Transforms log events to JSON records and logs them to a consolidated log file. <p/>
+ *
+ * Log format and rotation is configured in the configuration file logback.xml, see appender FILE.
+ */
 @Component
 @Slf4j
 public class FileOutputLogConsumer implements LogConsumer {

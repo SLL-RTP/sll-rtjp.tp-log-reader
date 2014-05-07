@@ -1,7 +1,7 @@
 package se.sll.rtjp.log;
 
 /**
- * Produces log event.
+ * Produces log events.
  *
  */
 public interface LogProducer extends Runnable {

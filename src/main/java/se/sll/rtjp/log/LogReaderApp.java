@@ -1,19 +1,18 @@
 package se.sll.rtjp.log;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-@EnableAutoConfiguration
-@Slf4j
+/**
+ * Application entry and configuration class. <p/>
+ *
+ * Please note: this is the main start-class declared in the maven properties section (see also pom.xml)
+ */
+@Configuration
 @ComponentScan
 @PropertySources(value = {
         @PropertySource(value = "classpath:log-reader.properties"),
@@ -34,8 +33,15 @@ public class LogReaderApp implements CommandLineRunner {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    //
+    /**
+     * Launches application utilizing spring boot.
+     *
+     * @param args all are ignored.
+     * @throws Exception on any bootstrap error.
+     */
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(LogReaderApp.class, args);
+        final SpringApplication app = new SpringApplication(LogReaderApp.class);
+        app.setShowBanner(false);
+        app.run(args);
     }
 }
