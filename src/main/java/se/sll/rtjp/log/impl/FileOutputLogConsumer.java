@@ -58,6 +58,7 @@ public class FileOutputLogConsumer implements LogConsumer {
         private String queueName;
         private String inboundEndpoint;
         private String outboundEndpoint;
+        private String outboundResponseTime;
         private String serviceImplementation;
         private String hostName;
         private String hostIp;
@@ -112,6 +113,7 @@ public class FileOutputLogConsumer implements LogConsumer {
         out.setQueueName(value("queueName", entry.getExtraInfo()));
         out.setInboundEndpoint(entry.getMetadataInfo().getEndpoint());
         out.setOutboundEndpoint(value("endpoint_url", entry.getExtraInfo()));
+        out.setOutboundResponseTime(value("time.producer", entry.getExtraInfo()));
         out.setServiceImplementation(entry.getMetadataInfo().getServiceImplementation());
         out.setHostName(entry.getRuntimeInfo().getHostName());
         out.setHostIp(entry.getRuntimeInfo().getHostIp());
