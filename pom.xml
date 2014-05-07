@@ -6,8 +6,12 @@
 
     <groupId>se.sll.rtjp.log</groupId>
     <artifactId>log-reader</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RELEASE</version>
     <packaging>jar</packaging>
+
+    <scm>
+        <connection>scm:git:https://peter.larsson%40callistaenterprise.se@code.google.com/p/sll-rtjp.tp-log-reader/</connection>
+    </scm>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -86,6 +90,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.8.1</version>
+                <configuration>
+                    <tag>${project.artifactId}-${project.version}</tag>
+                </configuration>
             </plugin>
         </plugins>
     </build>
