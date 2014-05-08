@@ -22,7 +22,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.soitoolkit.commons.logentry.schema.v1.LogEntryType;
 import org.soitoolkit.commons.logentry.schema.v1.LogEvent;
 import org.springframework.stereotype.Component;
-import se.sll.rtjp.log.LogConsumer;
+import reactor.event.Event;
+import reactor.function.Consumer;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -37,7 +38,7 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class FileOutputLogConsumer implements LogConsumer {
+public class FileOutputLogConsumer implements Consumer<Event<LogEvent>> {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -57,6 +58,11 @@ public class FileOutputLogConsumer implements LogConsumer {
             return new StringWriter();
         }
     };
+
+    @Override
+    public void accept(Event<LogEvent> event) {
+        log.info(toJsonString(toOutputEvent(event.getData())));
+    }
 
     /**
      * Use a flattened output format.
@@ -90,11 +96,6 @@ public class FileOutputLogConsumer implements LogConsumer {
         private String senderAddress;
         private String message;
         private String payload;
-    }
-
-    @Override
-    public void consume(LogEvent event) {
-        log.info(toJsonString(toOutputEvent(event)));
     }
 
     /**

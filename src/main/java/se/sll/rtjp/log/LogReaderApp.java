@@ -15,12 +15,20 @@
  */
 package se.sll.rtjp.log;
 
+import static reactor.event.selector.Selectors.$;
+
+import org.soitoolkit.commons.logentry.schema.v1.LogEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import reactor.core.Environment;
+import reactor.core.Reactor;
+import reactor.core.spec.Reactors;
+import reactor.event.Event;
+import reactor.function.Consumer;
 
 /**
  * Application entry and configuration class. <p/>
@@ -36,16 +44,36 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 public class LogReaderApp implements CommandLineRunner {
 
     @Autowired
-    private LogProducer logProducer;
+    private Runnable logProducer;
+
+    @Autowired
+    private Consumer<Event<LogEvent>> logConsumer;
+
+    @Autowired
+    private Reactor reactor;
 
     @Override
     public void run(String... args) throws Exception {
+        reactor.on($("log-events"), logConsumer);
         logProducer.run();
     }
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    @Bean
+    public Environment env() {
+        return new Environment();
+    }
+
+    @Bean
+    public Reactor createReactor(Environment env) {
+        return Reactors.reactor()
+                .env(env)
+                .dispatcher(Environment.EVENT_LOOP)
+                .get();
     }
 
     /**

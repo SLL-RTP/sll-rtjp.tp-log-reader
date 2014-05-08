@@ -28,8 +28,8 @@ import org.soitoolkit.commons.logentry.schema.v1.LogEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import se.sll.rtjp.log.LogConsumer;
-import se.sll.rtjp.log.LogProducer;
+import reactor.core.Reactor;
+import reactor.event.Event;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -43,10 +43,10 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class ActiveMQLogProducer implements LogProducer {
+public class ActiveMQLogProducer implements Runnable {
 
     @Autowired
-    private LogConsumer logConsumer;
+    private Reactor reactor;
 
     @Value("#{'${log.amqInstances}'.split(',')}")
     private List<String> logInstances;
@@ -57,7 +57,6 @@ public class ActiveMQLogProducer implements LogProducer {
     private List<String> logQueues;
 
 
-    @Override
     public void stop() {
         if (consumers == null) {
             return;
@@ -96,7 +95,7 @@ public class ActiveMQLogProducer implements LogProducer {
     @SneakyThrows
     private Consumer createConsumer(CamelContext camel, final String compName, final String queueName) {
         final String endpointName = compName + ":" + queueName;
-        final Consumer consumer = camel.getEndpoint(endpointName).createConsumer(new AMQProcessor(logConsumer, queueName));
+        final Consumer consumer = camel.getEndpoint(endpointName).createConsumer(new AMQProcessor(reactor, queueName));
         log.info(String.format("Listener started [ endpoint: %s ]", endpointName));
         consumer.start();
         return consumer;
@@ -113,12 +112,12 @@ public class ActiveMQLogProducer implements LogProducer {
             }
         };
 
-        private LogConsumer logConsumer;
+        private Reactor reactor;
         private LogEntryType.ExtraInfo queueInfo;
 
         //
-        AMQProcessor(final LogConsumer logConsumer, final String queueName) {
-            this.logConsumer = logConsumer;
+        AMQProcessor(final Reactor reactor, final String queueName) {
+            this.reactor = reactor;
             this.queueInfo = new LogEntryType.ExtraInfo();
             this.queueInfo.setName("queueName");
             this.queueInfo.setValue(queueName);
@@ -134,7 +133,7 @@ public class ActiveMQLogProducer implements LogProducer {
             try {
                 final LogEvent le = unmarshal((String)exchange.getIn().getBody());
                 le.getLogEntry().getExtraInfo().add(this.queueInfo);
-                this.logConsumer.consume(le);
+                reactor.notify("log-events", Event.wrap(le));
             } catch (Exception e) {
                 log.error("Unable to process event", e);
                 throw e;
