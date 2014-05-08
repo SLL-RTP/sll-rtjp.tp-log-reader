@@ -104,7 +104,7 @@ public class ActiveMQLogProducer implements LogProducer {
 
     //
     static class AMQProcessor implements Processor {
-        // JAXBContext if thread-safe unless it's reconfigured, anyway it's a neat pattern.
+        // JAXBContext is thread-safe unless it's reconfigured, anyway it's a neat and safe pattern to use.
         private static final ThreadLocal<Unmarshaller> unmarshaller = new ThreadLocal<Unmarshaller>() {
             @Override
             @SneakyThrows(JAXBException.class)
