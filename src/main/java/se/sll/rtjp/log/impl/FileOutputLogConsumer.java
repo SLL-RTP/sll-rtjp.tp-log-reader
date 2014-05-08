@@ -67,7 +67,7 @@ public class FileOutputLogConsumer implements LogConsumer {
         private String businessCorrelationId;
         private String messageId;
         private String serviceNamespace;
-        /** Logical address of the origin service consumer  (oriign) */
+        /** Logical address of the origin service consumer  (origin) */
         private String originAddress;
         /** Logical address of the receiver (to) */
         private String receiverAddress;
