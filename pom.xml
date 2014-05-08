@@ -103,6 +103,34 @@
                     <tag>${project.artifactId}-${project.version}</tag>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.10.b1</version>
+                <configuration>
+                    <properties>
+                    </properties>
+                    <strictCheck>true</strictCheck>
+                    <header>http://tp-log-reader.sll-rtjp.googlecode.com/git/LICENSE.txt</header>
+                    <encoding>UTF-8</encoding>
+                    <includes>
+                        <include>src/main/**</include>
+                        <include>src/test/**</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*.xsd</exclude>
+                        <exclude>**/*.wsdl</exclude>
+                        <exclude>**/*.dtd</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/test-files/**</exclude>
+                    </excludes>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <mapping>
+                        <tag>DYNASCRIPT_STYLE</tag>
+                    </mapping>
+                    <useDefaultMapping>true</useDefaultMapping>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
