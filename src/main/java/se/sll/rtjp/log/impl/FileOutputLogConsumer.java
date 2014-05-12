@@ -79,7 +79,7 @@ public class FileOutputLogConsumer implements Consumer<Event<LogEvent>> {
         private String queueName;
         private String inboundEndpoint;
         private String outboundEndpoint;
-        private String outboundResponseTime;
+        private Integer outboundResponseTime;
         private String serviceImplementation;
         private String hostName;
         private String hostIp;
@@ -129,7 +129,7 @@ public class FileOutputLogConsumer implements Consumer<Event<LogEvent>> {
         out.setQueueName(value("queueName", entry.getExtraInfo()));
         out.setInboundEndpoint(entry.getMetadataInfo().getEndpoint());
         out.setOutboundEndpoint(value("endpoint_url", entry.getExtraInfo()));
-        out.setOutboundResponseTime(value("time.producer", entry.getExtraInfo()));
+        out.setOutboundResponseTime(integer(value("time.producer", entry.getExtraInfo())));
         out.setServiceImplementation(entry.getMetadataInfo().getServiceImplementation());
         out.setHostName(entry.getRuntimeInfo().getHostName());
         out.setHostIp(entry.getRuntimeInfo().getHostIp());
@@ -145,6 +145,15 @@ public class FileOutputLogConsumer implements Consumer<Event<LogEvent>> {
         out.setPayload(entry.getPayload());
 
         return out;
+    }
+
+    /**
+     * Returns an integer.
+     *
+     * @param value the string representation.
+     */
+    protected Integer integer(final String value) {
+        return (value == null) ? null : Integer.valueOf(value);
     }
 
     /**
