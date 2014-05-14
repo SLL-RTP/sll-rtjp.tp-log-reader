@@ -7,7 +7,7 @@ Logfilen roteras varje natt. Se konfiguration nedan för hur man ställer in var
 Programmet startas enligt:
 
 ```sh
-$ java [-Dlog-reader-config=<config-file> ] jar log-reader<-version>.jar
+$ java [-Dlog-reader-config=<config-file> ] -jar log-reader<-version>.jar
 ```
 
 ## Default konfiguration
