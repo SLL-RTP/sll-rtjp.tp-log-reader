@@ -23,13 +23,12 @@ import org.apache.camel.Consumer;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.soitoolkit.commons.logentry.schema.v1.LogEntryType;
-import org.soitoolkit.commons.logentry.schema.v1.LogEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.Reactor;
 import reactor.event.Event;
+import se.sll.rtjp.log.api.LogEvent;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -73,7 +72,6 @@ public class ActiveMQLogProducer implements Runnable {
 
     /**
      * Starts queue listeners.
-     *
      */
     public void start() {
         final CamelContext camel = new DefaultCamelContext();
@@ -108,32 +106,31 @@ public class ActiveMQLogProducer implements Runnable {
             @Override
             @SneakyThrows(JAXBException.class)
             public Unmarshaller initialValue() {
-                return JAXBContext.newInstance(LogEvent.class).createUnmarshaller();
+                return JAXBContext.newInstance(org.soitoolkit.commons.logentry.schema.v1.LogEvent.class).createUnmarshaller();
             }
         };
 
         private Reactor reactor;
-        private LogEntryType.ExtraInfo queueInfo;
+        private String queueName;
 
         //
         AMQProcessor(final Reactor reactor, final String queueName) {
             this.reactor = reactor;
-            this.queueInfo = new LogEntryType.ExtraInfo();
-            this.queueInfo.setName("queueName");
-            this.queueInfo.setValue(queueName);
+            this.queueName = queueName;
         }
 
         //
-        static LogEvent unmarshal(final String msg) throws JAXBException {
-            return (LogEvent)unmarshaller.get().unmarshal(new ByteArrayInputStream(msg.getBytes()));
+        static org.soitoolkit.commons.logentry.schema.v1.LogEvent unmarshal(final String msg) throws JAXBException {
+            return (org.soitoolkit.commons.logentry.schema.v1.LogEvent)unmarshaller.get().unmarshal(new ByteArrayInputStream(msg.getBytes()));
         }
 
         @Override
         public void process(Exchange exchange) throws Exception {
             try {
-                final LogEvent le = unmarshal((String)exchange.getIn().getBody());
-                le.getLogEntry().getExtraInfo().add(this.queueInfo);
-                reactor.notify("log-events", Event.wrap(le));
+                final org.soitoolkit.commons.logentry.schema.v1.LogEvent le = unmarshal((String)exchange.getIn().getBody());
+                final LogEvent event = LogEvent.from(le);
+                event.setQueueName(this.queueName);
+                reactor.notify("event", Event.wrap(event));
             } catch (Exception e) {
                 log.error("Unable to process event", e);
                 throw e;

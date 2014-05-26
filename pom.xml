@@ -36,6 +36,7 @@
         <camel.version>2.13.0</camel.version>
         <mapper.version>1.9.13</mapper.version>
         <lombok.version>1.12.6</lombok.version>
+        <dozer.version>5.4.0</dozer.version>
         <soitoolkit.version>0.6.0</soitoolkit.version>
         <start-class>se.sll.rtjp.log.LogReaderApp</start-class>
     </properties>
@@ -43,7 +44,25 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -74,6 +93,13 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.sf.dozer</groupId>
+            <artifactId>dozer</artifactId>
+            <version>${dozer.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.soitoolkit.commons.components</groupId>

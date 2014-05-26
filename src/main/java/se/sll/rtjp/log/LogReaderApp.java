@@ -17,44 +17,48 @@ package se.sll.rtjp.log;
 
 import static reactor.event.selector.Selectors.$;
 
-import org.soitoolkit.commons.logentry.schema.v1.LogEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import reactor.core.Environment;
 import reactor.core.Reactor;
 import reactor.core.spec.Reactors;
-import reactor.event.Event;
-import reactor.function.Consumer;
+import se.sll.rtjp.log.impl.FileOutputLogConsumer;
+import se.sll.rtjp.log.impl.WebSocketLogConsumer;
 
 /**
  * Application entry and configuration class. <p/>
  *
  * Please note: this is the main start-class declared in the maven properties section (see also pom.xml)
  */
-@Configuration
+@EnableAutoConfiguration
 @ComponentScan
 @PropertySources(value = {
         @PropertySource(value = "classpath:log-reader.properties"),
         @PropertySource(value = "file://${log-reader-config}", ignoreResourceNotFound = true)
 })
 public class LogReaderApp implements CommandLineRunner {
-
     @Autowired
     private Runnable logProducer;
 
     @Autowired
-    private Consumer<Event<LogEvent>> logConsumer;
+    private FileOutputLogConsumer fileOutputLogConsumer;
+
+
+    @Autowired
+    private WebSocketLogConsumer webSocketLogConsumer;
 
     @Autowired
     private Reactor reactor;
 
     @Override
     public void run(String... args) throws Exception {
-        reactor.on($("log-events"), logConsumer);
+        reactor.on($("event"), fileOutputLogConsumer);
+        reactor.on($("event"), webSocketLogConsumer);
         logProducer.run();
     }
 
